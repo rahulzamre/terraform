@@ -1,0 +1,47 @@
+name: Update Terraform Variables
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'New Docker image tag'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  update-tfvars:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update tfvars file
+        run: |
+          echo "docker_image_tag = \"${{ inputs.image_tag }}\"" > terraform/variables.tfvars
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add terraform/variables.tfvars
+          git commit -m "Update Docker image tag to ${{ inputs.image_tag }}"
+          git push origin main
+
+  apply-terraform:
+    needs: update-tfvars
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Apply Terraform Changes
+        run: |
+          terraform apply -var-file=terraform/variables.tfvars -auto-approve
