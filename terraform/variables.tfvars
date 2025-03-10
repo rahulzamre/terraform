@@ -1,1 +1,1 @@
-docker_image_tag = "main-3f95d34"
+docker_image_tag = "main-10615b6"
