@@ -23,13 +23,12 @@ jobs:
 
       - name: Modify Terraform Variables
         run: |
-          sed -i 's|app1_tag *= *".*"|app1_tag = "${{ github.event.inputs.app1_tag }}"|' environments/dev/main.tf
-          sed -i 's|app2_tag *= *".*"|app2_tag = "${{ github.event.inputs.app2_tag }}"|' environments/dev/main.tf
-
+          sed -i 's|shipment_broker_tag *= *".*"|shipment_broker_tag = "${{ github.event.inputs.shipment_broker_tag }}"|' terraform/main.tf
+      
       - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions@github.com"
-          git add environments/dev/main.tf
-          git commit -m "Update app1_tag and app2_tag"
+          git add terraform/main.tf
+          git commit -m "Update shipment image tag"
           git push
