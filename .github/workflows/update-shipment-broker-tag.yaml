@@ -7,13 +7,8 @@ on:
         description: "New value for shipment_broker_tag"
         required: true
         type: string
-
-  push:
-    branches:
-      - main
-    paths:
-      - "environments/dev/*"  # Runs only if Terraform files change
-
+permissions:
+  contents: write        
 jobs:
   update-tags:
     runs-on: ubuntu-latest
