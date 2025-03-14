@@ -1,0 +1,35 @@
+name: Update Terraform Tags
+
+on:
+  workflow_dispatch:
+    inputs:
+      shipment_broker_tag:
+        description: "New value for shipment_broker_tag"
+        required: true
+        type: string
+
+  push:
+    branches:
+      - main
+    paths:
+      - "environments/dev/*"  # Runs only if Terraform files change
+
+jobs:
+  update-tags:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Modify Terraform Variables
+        run: |
+          sed -i 's|app1_tag *= *".*"|app1_tag = "${{ github.event.inputs.app1_tag }}"|' environments/dev/main.tf
+          sed -i 's|app2_tag *= *".*"|app2_tag = "${{ github.event.inputs.app2_tag }}"|' environments/dev/main.tf
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions@github.com"
+          git add environments/dev/main.tf
+          git commit -m "Update app1_tag and app2_tag"
+          git push
